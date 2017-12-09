@@ -50,7 +50,6 @@ public class LogInPage {
 		rs = st.executeQuery(getAllUserQuery);
 		
 		System.out.println("\n\nValidating the user...");
-		//Thread.sleep(500);
 		
 		while(rs.next()) {
 			if( username.equals(rs.getString("username")) 
