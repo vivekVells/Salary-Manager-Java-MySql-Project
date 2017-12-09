@@ -1,6 +1,3 @@
-/ConnectionEstablish/
 /MainHub/
-/TransactionEnable/
-/UserBlock/
-/Utility/
-/ViewInfo/
+/.gitignore
+/ConnectionEstablish/
