@@ -15,7 +15,7 @@ public class AccountRecovery {
 	private static String retrievedUserName = null, retrievedRecoveryAnswer = null, retrievedPassword = null, retrievedEmail = null;
 
 	public static void accountRecoveryScreenBanner() {
-		System.out.println("\t\t\t\t\t\t  New User Account Registration Page\n");
+		System.out.println("\t\t\t\t\t\t  Account Recovery Page\n");
 	}
 	
 	public static void accountRecoveryHelp() {
