@@ -1,12 +1,12 @@
 # Salary Manager
 #### Project Working Demo Video: https://youtu.be/JTzFz7wpwvk
 
-### Objective: 
+### Objective
 - To track and manage the income and expense transaction of a person
-### Languages Used: 
+### Languages Used 
 - Java
-- MySql
-### Features: 
+- MySql (via JAVA JDBC Connectivity)
+### Features
 - Create an User Account
 - Enter Income or Expense Information
 - View Income or Expense or Net Balance Summary Information
@@ -17,10 +17,13 @@
   - DML, DDL, Triggers and Variables 
   - Normalization & Bridge/Junction
   - How to avoid data redundancy and mantain data integrity
-- OOPS
-- JDBC
+  - Entity Relationship Diagram
+- OOPS concepts 
+  - Modularity of the code blocks which enabled to understand the value of code reusability
+- JDBC stuffs
+  - Connection Establishing, Statement Creation, ResultSet retrival
 - How to export and execute a runnable Jar file
-- How to clear the windows console
+- How to clear previous output in the windows console
 - How to send email using javax.jar file
 ### Future Code
 - Little tweaks
