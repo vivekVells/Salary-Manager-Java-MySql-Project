@@ -1,0 +1,68 @@
+++++++++ INCOME + TRANSACTION +++++++++++++
+tables:
+- income
+- income_transaction
+- transaction
+
+# <!--- START initial set up ---!>
+# step 1: ran initially only once
+
+# trigger setup to catch recently inserted expense amount
+set @recent_expense_amount=0.0;
+create trigger get_recent_expense_amount AFTER INSERT ON expense for each row set @recent_expense_amount = NEW.expenseAmount;
+
+# trigger to capture current userId who inserted the expense
+set @current_expense_userId=0;
+create trigger get_current_expense_userId AFTER INSERT ON expense for each row set @current_expense_userId = NEW.userId;
+
+# trigger to store the recently created expenseId
+set @recent_expenseId=0;
+create trigger get_recent_expenseId AFTER INSERT ON expense for each row set @recent_expenseId = NEW.expenseId;
+
+# this trigger is commonly used by income and expense entities
+# trigger to capture recently created transaction id
+set @recent_transactionId=0;
+create trigger get_recent_transactionId AFTER INSERT ON transaction for each row set @recent_transactionId = NEW.transactionId;
+# <!--- END initial set up ---!>
+
+# steps 2,3,4 and 5 will definitely executes for all income transactions
+
+# step 2: EXPENSE table insertion
+# Note: if expense amount is greater than the net income amount of the user, the followings will not be executed. even if the followings executes some whow by mistake, the transaction.netAmount will not accept negative entries thus erroring out (ERROR 1264 (22003): Out of range value for column 'netAmount' at row 1).
+insert into expense(expenseAmount, spentOnDate, note, userId) values(680, NOW(), 'Nutella and bread', 7);
+
+# step 3: to retrive recent netAmount available at TRANSACTION.netAmount of logged in user.
+set @recent_net_amount_by_userId = if((select exists(select 1 from transaction where userId = @current_expense_userId limit 1)) !=1,0.0,(select netAmount from transaction where userId = @current_expense_userId order by transactionId DESC limit 1));
+		
+# step 4: TRANSACTION table insertion			
+insert into transaction(netAmount, userId, isIncome) values((@recent_net_amount_by_userId - @recent_expense_amount), @current_expense_userId, 'N');
+
+# step 5: INCOME_TRANSACTION table insertion
+insert into expense_transaction(expenseId, transactionId) values(@recent_expenseId, @recent_transactionId);
+
+# step 6: check the table values queries (to verify data integrity)
+select * from expense;
+select * from transaction;
+select * from expense_transaction;
+select @recent_expense_amount, @recent_expenseId, @current_expense_userId, @recent_net_amount_by_userId;
+
+
+# sample data to test - whenever this done, steps: 3, 4 & 5 definitely to be run after this income data insertion;
+
+insert into expense(expenseAmount, spentOnDate, note, userId) values(680, '2017-11-20', 'Nutella and bread', 7);
+
+insert into expense(expenseAmount, spentOnDate, note, userId) values(300, '2017-11-21', 'gas', 8);
+
+insert into expense(expenseAmount, spentOnDate, note, userId) values(1340, '2017-11-22', 'charity', 7);
+
+insert into expense(expenseAmount, spentOnDate, note, userId) values(68.34, '2017-11-22', 'tshirts', 7);
+
+insert into expense(expenseAmount, spentOnDate, note, userId) values(12.56, '2017-11-24', 'eggs', 8);
+
+
+
+
+
+
+
+

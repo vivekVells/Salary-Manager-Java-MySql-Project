@@ -1,0 +1,159 @@
+++++++++ INCOME + TRANSACTION +++++++++++++
+tables:
+- income
+- income_transaction
+- transaction
+
+# <!--- START initial set up ---!>
+# step 1: ran initially only once
+
+# trigger setup to catch recently inserted income amount
+set @recent_income_amount=0.0;
+create trigger get_recent_income_amount AFTER INSERT ON income for each row set @recent_income_amount = NEW.incomeAmount;
+
+# trigger to capture current userId who inserted the income
+set @current_income_userId=0;
+create trigger get_current_income_userId AFTER INSERT ON income for each row set @current_income_userId = NEW.userId;
+
+# trigger to store the recently created incomeId
+set @recent_incomeId=0;
+create trigger get_recent_incomeId AFTER INSERT ON INCOME for each row set @recent_incomeId = NEW.incomeId;
+# <!--- END initial set up ---!>
+
+# steps 2,3,4 and 5 will definitely executes for all income transactions
+
+# step 2: INCOME table insertion
+insert into income(incomeAmount, earnedDate, note, jobRole, userId) values(3500, '2017-11-2', 'job at intern soft', 'Software Engineer Intern', 7);
+# step 3: to retrive recent netAmount available at TRANSACTION.netAmount of logged in user.
+set @recent_net_amount_by_userId = if( (select exists(select 1 from transaction where userId = @current_income_userId limit 1)) !=1,0.0,(select netAmount from transaction where userId = @current_income_userId order by transactionId DESC limit 1) );
+
+# step 4: TRANSACTION table insertion			
+insert into transaction(netAmount, userId, isIncome) values((@recent_income_amount + @recent_net_amount_by_userId), @current_income_userId, 'Y');
+
+# step 5: INCOME_TRANSACTION table insertion
+insert into income_transaction(incomeId, transactionId) values(@recent_incomeId, @recent_transactionId);
+
+
+# step 6: check the table values queries (to verify data integrity)
+select * from income;
+select * from expense;
+select * from transaction;
+select * from income_transaction;
+select * from expense_transaction;
+select @recent_income_amount, @recent_incomeId, @current_income_userId, @recent_net_amount_by_userId;
+
+
+#_____________________________________________________________________________________________________________________________
+#_____________________________________________________________________________________________________________________________
+
+# sample data to test - whenever this done, steps: 3, 4 & 5 definitely to be run after this income data insertion;
+
+insert into income(incomeAmount, earnedDate, note, jobRole, userId) values(3500, '2017-11-17', 'job at intern soft', 'Software Engineer Intern', 4);
+# step 3: to retrive recent netAmount available at TRANSACTION.netAmount of logged in user.
+set @recent_net_amount_by_userId = if( (select exists(select 1 from transaction where userId = @current_income_userId limit 1)) !=1,0.0,(select netAmount from transaction where userId = @current_income_userId order by transactionId DESC limit 1) );
+
+# step 4: TRANSACTION table insertion			
+insert into transaction(netAmount, userId, isIncome) values((@recent_income_amount + @recent_net_amount_by_userId), @current_income_userId, 'Y');
+
+# step 5: INCOME_TRANSACTION table insertion
+insert into income_transaction(incomeId, transactionId) values(@recent_incomeId, @recent_transactionId);
+
+
+# step 6: check the table values queries (to verify data integrity)
+select * from income;
+select * from expense;
+select * from transaction;
+select * from income_transaction;
+select * from expense_transaction;
+select @recent_transactionId, @recent_income_amount, @recent_incomeId, @current_income_userId, @recent_net_amount_by_userId;
+
+#_____________________________________________________________________________________________________________________________
+
+insert into income(incomeAmount, earnedDate, note, jobRole, userId) values(500, '2017-11-17', 'design web page', 'Web Designer', 4);
+# step 3: to retrive recent netAmount available at TRANSACTION.netAmount of logged in user.
+set @recent_net_amount_by_userId = if( (select exists(select 1 from transaction where userId = @current_income_userId limit 1)) !=1,0.0,(select netAmount from transaction where userId = @current_income_userId order by transactionId DESC limit 1) );
+
+# step 4: TRANSACTION table insertion			
+insert into transaction(netAmount, userId, isIncome) values((@recent_income_amount + @recent_net_amount_by_userId), @current_income_userId, 'Y');
+
+# step 5: INCOME_TRANSACTION table insertion
+insert into income_transaction(incomeId, transactionId) values(@recent_incomeId, @recent_transactionId);
+
+
+# step 6: check the table values queries (to verify data integrity)
+select * from income;
+select * from expense;
+select * from transaction;
+select * from income_transaction;
+select * from expense_transaction;
+select @recent_transactionId, @recent_income_amount, @recent_incomeId, @current_income_userId, @recent_net_amount_by_userId;
+#_____________________________________________________________________________________________________________________________
+
+
+insert into income(incomeAmount, earnedDate, note, jobRole, userId) values(2200, '2017-11-18', 'manage db', 'DB Manager', 5);
+# step 3: to retrive recent netAmount available at TRANSACTION.netAmount of logged in user.
+set @recent_net_amount_by_userId = if( (select exists(select 1 from transaction where userId = @current_income_userId limit 1)) !=1,0.0,(select netAmount from transaction where userId = @current_income_userId order by transactionId DESC limit 1) );
+
+# step 4: TRANSACTION table insertion			
+insert into transaction(netAmount, userId, isIncome) values((@recent_income_amount + @recent_net_amount_by_userId), @current_income_userId, 'Y');
+
+# step 5: INCOME_TRANSACTION table insertion
+insert into income_transaction(incomeId, transactionId) values(@recent_incomeId, @recent_transactionId);
+
+
+# step 6: check the table values queries (to verify data integrity)
+select * from income;
+select * from expense;
+select * from transaction;
+select * from income_transaction;
+select * from expense_transaction;
+select @recent_transactionId, @recent_income_amount, @recent_incomeId, @current_income_userId, @recent_net_amount_by_userId;
+
+#_____________________________________________________________________________________________________________________________#
+
+insert into income(incomeAmount, earnedDate, note, jobRole, userId) values(800, '2017-11-18', 'tutor online', 'Online Tutoring', 4);
+# step 3: to retrive recent netAmount available at TRANSACTION.netAmount of logged in user.
+set @recent_net_amount_by_userId = if( (select exists(select 1 from transaction where userId = @current_income_userId limit 1)) !=1,0.0,(select netAmount from transaction where userId = @current_income_userId order by transactionId DESC limit 1) );
+
+# step 4: TRANSACTION table insertion			
+insert into transaction(netAmount, userId, isIncome) values((@recent_income_amount + @recent_net_amount_by_userId), @current_income_userId, 'Y');
+
+# step 5: INCOME_TRANSACTION table insertion
+insert into income_transaction(incomeId, transactionId) values(@recent_incomeId, @recent_transactionId);
+
+
+# step 6: check the table values queries (to verify data integrity)
+select * from income;
+select * from expense;
+select * from transaction;
+select * from income_transaction;
+select * from expense_transaction;
+select @recent_transactionId, @recent_income_amount, @recent_incomeId, @current_income_userId, @recent_net_amount_by_userId;
+#_____________________________________________________________________________________________________________________________
+
+insert into income(incomeAmount, earnedDate, note, jobRole, userId) values(600, '2017-11-19', 'design web page', 'Web Designer', 5);
+# step 3: to retrive recent netAmount available at TRANSACTION.netAmount of logged in user.
+set @recent_net_amount_by_userId = if( (select exists(select 1 from transaction where userId = @current_income_userId limit 1)) !=1,0.0,(select netAmount from transaction where userId = @current_income_userId order by transactionId DESC limit 1) );
+
+# step 4: TRANSACTION table insertion			
+insert into transaction(netAmount, userId, isIncome) values((@recent_income_amount + @recent_net_amount_by_userId), @current_income_userId, 'Y');
+
+# step 5: INCOME_TRANSACTION table insertion
+insert into income_transaction(incomeId, transactionId) values(@recent_incomeId, @recent_transactionId);
+
+
+# step 6: check the table values queries (to verify data integrity)
+select * from income;
+select * from expense;
+select * from transaction;
+select * from income_transaction;
+select * from expense_transaction;
+select @recent_transactionId, @recent_income_amount, @recent_incomeId, @current_income_userId, @recent_net_amount_by_userId;
+
+#_____________________________________________________________________________________________________________________________
+#_____________________________________________________________________________________________________________________________
+
+
+
+
+

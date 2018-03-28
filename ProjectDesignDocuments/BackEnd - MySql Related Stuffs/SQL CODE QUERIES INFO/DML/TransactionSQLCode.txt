@@ -1,0 +1,106 @@
+###############
+Retrieving income and expense from transaction table
+>>>FOR INCOME<<<<
+mysql> select * from income limit 1;
++----------+--------------+------------+--------+--------------------------+--------+---------------------+-----------+
+| incomeId | incomeAmount | earnedDate | note   | jobRole                  | userId | createdOn           | deletedOn |
++----------+--------------+------------+--------+--------------------------+--------+---------------------+-----------+
+|       12 |      3500.78 | 2017-11-03 | Intern | Software Engineer Intern |      4 | 2017-12-06 15:29:39 | NULL      |
++----------+--------------+------------+--------+--------------------------+--------+---------------------+-----------+
+1 row in set (0.00 sec)
+
+mysql> select * from income_transaction limit 1;
++---------------------+----------+---------------+---------------------+-----------+
+| incomeTransactionId | incomeId | transactionId | createdOn           | deletedOn |
++---------------------+----------+---------------+---------------------+-----------+
+|                   6 |       12 |            11 | 2017-12-06 15:29:39 | NULL      |
++---------------------+----------+---------------+---------------------+-----------+
+1 row in set (0.00 sec)
+
+mysql> select * from transaction limit 1;
++---------------+-----------+---------------------+--------+----------+---------------------+-----------+
+| transactionId | netAmount | asOnDate            | userId | isIncome | createdOn           | deletedOn |
++---------------+-----------+---------------------+--------+----------+---------------------+-----------+
+|            11 |   3500.78 | 2017-12-06 15:29:39 |      4 | Y        | 2017-12-06 15:29:39 | NULL      |
++---------------+-----------+---------------------+--------+----------+---------------------+-----------+
+1 row in set (0.00 sec)
+
+mysql> select income.incomeAmount, income.earnedDate, income.note, income.jobRole from income where incomeId = (select income_transaction.incomeId from income_transaction where transactionId = 11) and income.deletedOn is null;
++--------------+------------+--------+--------------------------+
+| incomeAmount | earnedDate | note   | jobRole                  |
++--------------+------------+--------+--------------------------+
+|      3500.78 | 2017-11-03 | Intern | Software Engineer Intern |
++--------------+------------+--------+--------------------------+
+1 row in set (0.02 sec)
+
+
+>>> FOR EXPENSE <<<
+mysql> select * from expense limit 1;
++-----------+---------------+-------------+------+--------+---------------------+-----------+
+| expenseId | expenseAmount | spentOnDate | note | userId | createdOn           | deletedOn |
++-----------+---------------+-------------+------+--------+---------------------+-----------+
+|         5 |        300.00 | 2017-11-05  | Rent |      4 | 2017-12-06 15:30:43 | NULL      |
++-----------+---------------+-------------+------+--------+---------------------+-----------+
+1 row in set (0.00 sec)
+
+mysql> select * from expense_transaction limit 1;
++----------------------+-----------+---------------+---------------------+-----------+
+| expenseTransactionId | expenseId | transactionId | createdOn           | deletedOn |
++----------------------+-----------+---------------+---------------------+-----------+
+|                    4 |         5 |            12 | 2017-12-06 15:30:44 | NULL      |
++----------------------+-----------+---------------+---------------------+-----------+
+1 row in set (0.00 sec)
+
+mysql> select * from transaction where transactionId=12;
++---------------+-----------+---------------------+--------+----------+---------------------+-----------+
+| transactionId | netAmount | asOnDate            | userId | isIncome | createdOn           | deletedOn |
++---------------+-----------+---------------------+--------+----------+---------------------+-----------+
+|            12 |   3200.78 | 2017-12-06 15:30:44 |      4 | N        | 2017-12-06 15:30:44 | NULL      |
++---------------+-----------+---------------------+--------+----------+---------------------+-----------+
+1 row in set (0.00 sec)
+
+mysql> select expense.expenseAmount, expense.note, expense.spentOnDate from expense where expense.expenseId = (select expense_transaction.expenseId from expense_transaction where transactionId = 12) and expense.deletedOn is null;
++---------------+------+-------------+
+| expenseAmount | note | spentOnDate |
++---------------+------+-------------+
+|        300.00 | Rent | 2017-11-05  |
++---------------+------+-------------+
+1 row in set (0.00 sec)
+
+
+Net Amount Calculation:
+mysql> select sum(incomeAmount) from income where userId=4;
++-------------------+
+| sum(incomeAmount) |
++-------------------+
+|          10952.28 |
++-------------------+
+1 row in set (0.00 sec)
+
+mysql> select sum(expenseAmount) from expense where userId=4;
++--------------------+
+| sum(expenseAmount) |
++--------------------+
+|             370.22 |
++--------------------+
+1 row in set (0.00 sec)
+
+mysql> select sum(incomeAmount) - (select sum(expenseAmount) from expense where userId=4) from income where userId=4;
++-----------------------------------------------------------------------------+
+| sum(incomeAmount) - (select sum(expenseAmount) from expense where userId=4) |
++-----------------------------------------------------------------------------+
+|                                                                    10582.06 |
++-----------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql>
+
+
+ALSo, the last row of the transaction table of appropriate userId will hold net amount value;
+mysql> select netAmount from transaction where userId = 4 order by createdOn desc limit 1;
++-----------+
+| netAmount |
++-----------+
+|  10582.06 |
++-----------+
+1 row in set (0.00 sec)

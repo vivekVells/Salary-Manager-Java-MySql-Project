@@ -1,0 +1,169 @@
+/*
+SCHEMA : salary_manager
+TABLES:
+- Independent
+	- Address
+	
+- User Block
+	- User
+	- UserInfo
+	- UserAddress
+	- UserLog
+
+- Earning block
+	- Job
+	- Income
+
+- Expense block
+	- Expense
+
+- Transaction block
+	- Transaction
+	- Income_Transaction
+	- Expense_Transaction
+*/
+
+CREATE TABLE address (
+  addressId INT(11) NOT NULL AUTO_INCREMENT,
+  street VARCHAR(25) NULL DEFAULT NULL,
+  city VARCHAR(20) NULL DEFAULT NULL,
+  state CHAR(2) NULL DEFAULT NULL,
+  zipcode INT(11) NULL DEFAULT NULL,
+  createdOn DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  deletedOn DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (addressId));
+  
+CREATE TABLE user (
+  userId INT(11) NOT NULL AUTO_INCREMENT,
+  username VARCHAR(10) NOT NULL,
+  password VARCHAR(10) NOT NULL,
+  recoveryAnswer VARCHAR(45) NULL DEFAULT NULL,
+  recoveryEmail VARCHAR(30) NULL DEFAULT NULL,
+  createdOn DATETIME NULL DEFAULT NULL,
+  lastUpdatedOn DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  deletedOn DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (userId));
+ 
+
+
+CREATE TABLE expense (
+  expenseId INT(11) NOT NULL AUTO_INCREMENT,
+  expenseAmount DECIMAL(10,2) NOT NULL,
+  spentOnDate DATE NOT NULL,
+  note VARCHAR(25) NULL DEFAULT NULL,
+  userId INT(11) NOT NULL,
+  createdOn DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  deletedOn DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (expenseId),
+  CONSTRAINT expenseUserFore
+    FOREIGN KEY (userId)
+    REFERENCES user (userId));
+
+
+CREATE TABLE transaction (
+  transactionId INT(11) NOT NULL AUTO_INCREMENT,
+  netAmount DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT '0.00',
+  asOnDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  userId INT(11) NOT NULL,
+  isIncome CHAR(1) NULL DEFAULT NULL,
+  createdOn DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  deletedOn DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (transactionId),
+  CONSTRAINT userTransaction
+    FOREIGN KEY (userId)
+    REFERENCES user (userId));
+
+CREATE TABLE expense_transaction (
+  expenseTransactionId INT(11) NOT NULL AUTO_INCREMENT,
+  expenseId INT(11) NOT NULL,
+  transactionId INT(11) NOT NULL,
+  createdOn DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  deletedOn DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (expenseTransactionId),
+  CONSTRAINT expenseForeign
+    FOREIGN KEY (expenseId)
+    REFERENCES expense (expenseId)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT transactionForeign
+    FOREIGN KEY (transactionId)
+    REFERENCES transaction (transactionId));
+
+
+CREATE TABLE job (
+  jobId INT(11) NOT NULL AUTO_INCREMENT,
+  roleName VARCHAR(25) NOT NULL,
+  createdOn DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  deletedOn DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (jobId));
+
+
+CREATE TABLE income (
+  incomeId INT(11) NOT NULL AUTO_INCREMENT,
+  incomeAmount DECIMAL(10,2) NOT NULL,
+  earnedDate DATE NOT NULL,
+  note VARCHAR(25) NULL DEFAULT NULL,
+  jobRole VARCHAR(25) NOT NULL,
+  userId INT(11) NOT NULL,
+  createdOn DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  deletedOn DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (incomeId)
+  );
+ 
+CREATE TABLE income_transaction (
+  incomeTransactionId INT(11) NOT NULL AUTO_INCREMENT,
+  incomeId INT(11) NOT NULL,
+  transactionId INT(11) NOT NULL,
+  createdOn DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  deletedOn DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (incomeTransactionId),
+  CONSTRAINT incomeIncomeTxnF
+    FOREIGN KEY (incomeId)
+    REFERENCES income (incomeId)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT transactionIncomeTxnF
+    FOREIGN KEY (transactionId)
+    REFERENCES transaction (transactionId)
+ );
+
+
+CREATE TABLE user_address (
+  userAddressId INT(11) NOT NULL AUTO_INCREMENT,
+  userId INT(11) NOT NULL,
+  addressId INT(11) NOT NULL,
+  PRIMARY KEY (userAddressId),
+  CONSTRAINT addressUserFore
+    FOREIGN KEY (addressId)
+    REFERENCES address (addressId)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT userIdAddFore
+    FOREIGN KEY (userId)
+    REFERENCES user (userId));
+
+
+CREATE TABLE userinfo (
+  userInfoId INT(11) NOT NULL AUTO_INCREMENT,
+  userId INT(11) NOT NULL,
+  firstName VARCHAR(25) NULL DEFAULT NULL,
+  middleName VARCHAR(25) NULL DEFAULT NULL,
+  lastName VARCHAR(25) NULL DEFAULT NULL,
+  phoneNumber BIGINT(20) NULL DEFAULT NULL,
+  createdOn DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  deletedOn DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (userInfoId),
+  CONSTRAINT userInfoForeign
+    FOREIGN KEY (userId)
+    REFERENCES user (userId));
+
+CREATE TABLE userlog (
+  userLogId INT(11) NOT NULL AUTO_INCREMENT,
+  userId INT(11) NOT NULL,
+  lastLoggedIn DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  lastLoggedOut DATETIME NULL DEFAULT NULL,
+  deletedOn DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (userLogId),
+  CONSTRAINT userLogIDForeign
+    FOREIGN KEY (userId)
+    REFERENCES user (userId));

@@ -1,0 +1,87 @@
++++++++++ INDEPENDENT ++++++++++
+tables:
+- address
+
+Action:
+mysql> insert into address(street, city, state, zipcode) values('45, Vern Terr', 'Poughkeepsie', 'NY', 12601), ('23, Gifford Ave', 'Sansy', 'CA', 929203), ('Main Street', 'Albany', 'NY', 12601), ('George Wash Street', 'BridgePort', 'NY', 12601);
+
+
+Actions:
+- ADDRESS table
+
++++++++++ USER +++++++++++
+tables:
+- user
+- userInfo
+- userAddress
+
+Actions:
+- USER TABLE
+mysql> insert into user(username, password, recoveryAnswer, recoveryEmail) value ('kev22', 'keviv', 'iavsh', 'techengineervivek@gmail.com'), ('shar37', 'sharan', 'forgot my password', 'shar@yahoo.com'), ('vaish47', 'haiav', 'i never forget anything', 'vaish@gmail.com');
+
+
+- USERINFO TABLE
+mysql> insert into userInfo(userId, firstName, middleName, lastName, phoneNumber) values(6, 'Vivek', 'V', 'Surulimuthu', 9292946551), (7, 'Sharan', 'Junior', 'Keviv', 9994451794), (8, 'Vaish', '', 'Leela', 9566133013);
+
+- USERADDRESS TABLE
+mysql> insert into user_address(userId, addressId) values(6,5), (7,7), (8,6);
+
+- USERLOG TABLE
+for logIn:
+#setup of trigger done to catch Current UserLogged in!
+# trigger to store recently created userlogId
+set @recent_userLogId=0;
+set @recent_loggedIn_userId=0;
+create trigger get_recent_userLogId AFTER INSERT ON UserLog for each row set @recent_userLogId = NEW.userLogId;
+create trigger get_recent_loggedUserId AFTER INSERT ON UserLog for each row set @recent_loggedIn_userId = NEW.userId;
+
+@recent_userLogId = (select userLogId from userlog order by userLogId desc limit 1);
+
+insert into userlog(userId, lastLoggedIn) values(4, NOW());
+
+for logout:
+@recent_userLogId can be obtained from trigger or by the following query too. (have to check the efficiecny)
+set @recent_userLogId = (select userLogId from userlog order by userLogId desc limit 1)
+update userLog set lastLoggedOut= NOW() where userLogId=@recent_userLogId
+
+Reason:
+- to map the difference between user log in and log out status so that we can analyze the active usage time spent by a user.
+
+
+- USERADDRESS TABLE
+mysql> select * from user;
++--------+----------+----------+-------------------------+-----------------------------+---------------------+---------------------+-----------+
+| userId | username | password | recoveryAnswer          | recoveryEmail               | createdOn           | lastUpdatedOn       | deletedOn |
++--------+----------+----------+-------------------------+-----------------------------+---------------------+---------------------+-----------+
+|      4 | kev22    | keviv    | iavsh                   | techengineervivek@gmail.com | 2017-12-05 23:00:13 | 2017-12-05 23:00:13 | NULL      |
+|      5 | shar37   | sharan   | forgot my password      | shar@yahoo.com              | 2017-12-05 23:00:13 | 2017-12-05 23:00:13 | NULL      |
+|      6 | vaish47  | haiav    | i never forget anything | vaish@gmail.com             | 2017-12-05 23:00:13 | 2017-12-05 23:00:13 | NULL      |
++--------+----------+----------+-------------------------+-----------------------------+---------------------+---------------------+-----------+
+3 rows in set (0.00 sec)
+
+mysql> select * from address;
++-----------+--------------------+--------------+-------+---------+---------------------+-----------+
+| addressId | street             | city         | state | zipcode | createdOn           | deletedOn |
++-----------+--------------------+--------------+-------+---------+---------------------+-----------+
+|         1 | 45, Vern Terr      | Poughkeepsie | NY    |   12601 | 2017-12-05 22:57:23 | NULL      |
+|         2 | 23, Gifford Ave    | Sansy        | CA    |  929203 | 2017-12-05 22:57:23 | NULL      |
+|         3 | Main Street        | Albany       | NY    |   12601 | 2017-12-05 22:57:23 | NULL      |
+|         4 | George Wash Street | BridgePort   | NY    |   12601 | 2017-12-05 22:57:23 | NULL      |
++-----------+--------------------+--------------+-------+---------+---------------------+-----------+
+4 rows in set (0.06 sec)
+
+mysql> select street, city, state, zipcode from address where addressId = (select addressId from user_address where userId = 4);
++---------------+--------------+-------+---------+
+| street        | city         | state | zipcode |
++---------------+--------------+-------+---------+
+| 45, Vern Terr | Poughkeepsie | NY    |   12601 |
++---------------+--------------+-------+---------+
+1 row in set (0.02 sec)
+
+mysql> select concat(street, ', ', state, ', ', zipcode) as addressUser from address where addressId = (select addressId from user_address where userId= 4);
++--------------------------+
+| addressUser              |
++--------------------------+
+| 45, Vern Terr, NY, 12601 |
++--------------------------+
+1 row in set (0.00 sec)
