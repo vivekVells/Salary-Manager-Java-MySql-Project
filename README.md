@@ -1,5 +1,6 @@
 # Salary Manager
 #### Project Working Demo Video: https://youtu.be/JTzFz7wpwvk
+#### Documentation: https://github.com/vivekVells/Salary-Manager-Java-MySql-Project/blob/master/Documentation%20-%20Salary%20Manager%20by%20Vivek%20Vellaiyappan.pdf 
 
 ### Objective
 - To track and manage the income and expense transaction of a person
