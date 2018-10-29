@@ -1,6 +1,13 @@
+### View all of my Projectworks - click over here -> [Vivek Vellaiyappan Project Works](https://github.com/vivekVells/VivekVellaiyappanProjectWorks)
+
 # Salary Manager
 #### Project Working Demo Video: https://youtu.be/JTzFz7wpwvk
-#### Documentation: https://github.com/vivekVells/Salary-Manager-Java-MySql-Project/blob/master/Documentation%20-%20Salary%20Manager%20by%20Vivek%20Vellaiyappan.pdf 
+#### Documentation: [Link](https://github.com/vivekVells/Salary-Manager-Java-MySql-Project/blob/master/Documentation%20-%20Salary%20Manager%20by%20Vivek%20Vellaiyappan.pdf) 
+- Kindly view the above documentation link to review all of the works I have done for this particular project that involves
+  - designing the database
+  - how i modularized the codes by blocks
+  - architecture diagrams (ER diagram, Block Diagram)
+  - db commands used (DDL, DML) - triggers usage
 
 ### Objective
 - To track and manage the income and expense transaction of a person
